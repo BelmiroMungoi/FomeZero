@@ -1,6 +1,7 @@
 package com.bbm.fomezero.exception.handler;
 
 import com.bbm.fomezero.exception.BadRequestException;
+import com.bbm.fomezero.exception.ConflictException;
 import com.bbm.fomezero.exception.ResourceNotFoundException;
 import com.bbm.fomezero.exception.UnauthorizedException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -65,18 +67,32 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return getObjectResponseEntity(request, status, ex.getMessage(), ex);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGlobalException(Exception ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        return getObjectResponseEntity(request, status, "Ocorreu um erro inesperado.", ex);
-    }
-
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Object> handleUnauthorizedException(UnauthorizedException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
         return getObjectResponseEntity(request, status, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Object> handleConflictException(ConflictException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return getObjectResponseEntity(request, status, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return getObjectResponseEntity(request, status, "Email ou Palavra-Passe errados, Por Favor Tente Novamente!", ex);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleGlobalException(Exception ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+
+        return getObjectResponseEntity(request, status, "Ocorreu um erro inesperado. " + ex, ex);
     }
 
     private ResponseEntity<Object> getObjectResponseEntity(HttpServletRequest request, HttpStatus status, String message, Exception ex) {
