@@ -22,6 +22,7 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+//    private final AuthenticationDebugService debugService;
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
@@ -32,4 +33,14 @@ public class AuthenticationController {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         authenticationService.refreshToken(request, response);
     }
+
+/*    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(
+            @RequestBody AuthenticationRequest request) {
+
+        // Debug
+        debugService.debugUser(request.getEmail(), request.getPassword());
+
+        return ResponseEntity.ok(authenticationService.authenticate(request));
+    }*/
 }

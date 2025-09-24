@@ -1,5 +1,7 @@
 package com.bbm.fomezero.config;
 
+import com.bbm.fomezero.exception.BadRequestException;
+import com.bbm.fomezero.exception.UnauthorizedException;
 import com.bbm.fomezero.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,13 +24,18 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                .map(user -> {
+                    if (Boolean.FALSE.equals(user.isStatus())) {
+                        throw new UnauthorizedException("Usuário Desactivado: A conta continua desactivada, " +
+                                "por favor siga os passos necessários para a activação da so conta!");
+                    }
+                    return user;
+                }).orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService());
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(userDetailsService());
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
