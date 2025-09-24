@@ -11,8 +11,11 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @OpenAPIDefinition(
         info = @Info(
-                title = "SIGA-Modulo Docente",
-                description = "Modulo de docente e estudantes do SIGA",
+                title = "FomeZero",
+                description = "FomeZero is a full-featured food delivery platform built to connect local restaurants with " +
+                        "customers across Mozambique." +
+                        "The platform allows restaurants to register and manage their menus, while drivers can " +
+                        "sign up to deliver orders quickly and reliably.\n",
                 version = "1.0",
                 contact = @Contact(
                         name = "Belmiro Mungoi",
