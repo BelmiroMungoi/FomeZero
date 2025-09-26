@@ -29,4 +29,8 @@ public class Cart {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void addItem(CartItem item) {
+        items.add(item);
+    }
 }
