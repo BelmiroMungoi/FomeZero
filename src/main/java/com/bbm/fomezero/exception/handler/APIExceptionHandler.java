@@ -1,9 +1,6 @@
 package com.bbm.fomezero.exception.handler;
 
-import com.bbm.fomezero.exception.BadRequestException;
-import com.bbm.fomezero.exception.ConflictException;
-import com.bbm.fomezero.exception.ResourceNotFoundException;
-import com.bbm.fomezero.exception.UnauthorizedException;
+import com.bbm.fomezero.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -18,6 +15,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -45,7 +43,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         StandardErrorResponse errorResponse = new StandardErrorResponse();
         errorResponse.setCode(status.value());
         errorResponse.setStatus(status);
-        errorResponse.setTitle("Erro de validação! Um ou mais campos estão inválidos!");
+        errorResponse.setTitle("Some fields are invalid. Please check your input and try again.");
         errorResponse.setTime(OffsetDateTime.now());
         errorResponse.setPath(request.getContextPath());
         errorResponse.setFields(validationErrors);
@@ -85,14 +83,21 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
 
-        return getObjectResponseEntity(request, status, "Email ou Palavra-Passe errados, Por Favor Tente Novamente!", ex);
+        return getObjectResponseEntity(request, status, "Your login details are incorrect. Please try again.", ex);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Object> handleForbiddenException(ForbiddenException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+
+        return getObjectResponseEntity(request, status, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        return getObjectResponseEntity(request, status, "Ocorreu um erro inesperado. " + ex, ex);
+        System.out.println(ex.getMessage());
+        return getObjectResponseEntity(request, status, "We’re sorry, but an unexpected error occurred. Please try again.", ex);
     }
 
     private ResponseEntity<Object> getObjectResponseEntity(HttpServletRequest request, HttpStatus status, String message, Exception ex) {
@@ -106,17 +111,4 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
-/*    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<Object> handleForbiddenException(ForbiddenException ex, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.FORBIDDEN;
-
-        StandardErrorResponse errorResponse = new StandardErrorResponse();
-        errorResponse.setCode(status.value());
-        errorResponse.setStatus(status);
-        errorResponse.setTitle(ex.getMessage());
-        errorResponse.setTime(OffsetDateTime.now());
-        errorResponse.setPath(request.getRequestURI());
-
-        return new ResponseEntity<>(errorResponse, status);
-    }*/
 }
