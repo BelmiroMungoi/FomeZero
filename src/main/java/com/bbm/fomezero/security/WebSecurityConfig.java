@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                                 "/swagger-ui/**",
                                 "/api/v1/auth/**"
                         ).permitAll()
+                        .requestMatchers("/api/v1/users").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated())
                 .sessionManagement((sessionManager) -> sessionManager

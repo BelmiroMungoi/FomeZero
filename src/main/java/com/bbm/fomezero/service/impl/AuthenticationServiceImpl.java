@@ -2,7 +2,7 @@ package com.bbm.fomezero.service.impl;
 
 import com.bbm.fomezero.dto.request.AuthenticationRequest;
 import com.bbm.fomezero.dto.response.AuthenticationResponse;
-import com.bbm.fomezero.exception.UnauthorizedException;
+import com.bbm.fomezero.exception.ResourceNotFoundException;
 import com.bbm.fomezero.model.Token;
 import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.repository.TokenRepository;
@@ -39,7 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 )
         );
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UnauthorizedException("Erro ao fazer login"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
