@@ -16,10 +16,10 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public Profile createProfile(User user, String phoneNumber) {
+    public void createProfile(User user, String phoneNumber) {
         Profile profile = new Profile();
         profile.setPhoneNumber(phoneNumber);
         profile.setUser(user);
-        return profileRepository.save(profile);
+        profileRepository.save(profile);
     }
 }
