@@ -1,6 +1,7 @@
 package com.bbm.fomezero.exception.handler;
 
 import com.bbm.fomezero.exception.*;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -19,7 +20,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setCode(status.value());
         errorResponse.setStatus(status);
         errorResponse.setTitle("Some fields are invalid. Please check your input and try again.");
-        errorResponse.setTime(OffsetDateTime.now());
+        errorResponse.setTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         errorResponse.setPath(request.getContextPath());
         errorResponse.setFields(validationErrors);
         return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
@@ -93,6 +96,13 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return getObjectResponseEntity(request, status, ex.getMessage(), ex);
     }
 
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return getObjectResponseEntity(request, status, "Your session has expired. Please log in again.", ex);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -105,7 +115,7 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.setCode(status.value());
         errorResponse.setStatus(status);
         errorResponse.setTitle(message);
-        errorResponse.setTime(OffsetDateTime.now());
+        errorResponse.setTime(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         errorResponse.setPath(request.getRequestURI());
 
         return new ResponseEntity<>(errorResponse, status);
