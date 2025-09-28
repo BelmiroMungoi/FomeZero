@@ -10,4 +10,5 @@ public class UserResponseDTO {
     private String email;
     private String role;
     private boolean status;
+    private ProfileResponseDTO profile;
 }
