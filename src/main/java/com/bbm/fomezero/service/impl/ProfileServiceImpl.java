@@ -1,5 +1,6 @@
 package com.bbm.fomezero.service.impl;
 
+import com.bbm.fomezero.exception.ResourceNotFoundException;
 import com.bbm.fomezero.model.Profile;
 import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.repository.ProfileRepository;
@@ -16,10 +17,27 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void createProfile(User user, String phoneNumber) {
+    public void createProfile(User user, String phoneNumber, String avatarUrl) {
         Profile profile = new Profile();
         profile.setPhoneNumber(phoneNumber);
+        profile.setAvatarUrl(avatarUrl);
         profile.setUser(user);
+        profileRepository.save(profile);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Profile getProfileByUser(User user) {
+        return profileRepository.findByUser(user).orElseThrow(() ->
+                new ResourceNotFoundException("Profile not found."));
+    }
+
+    @Override
+    @Transactional
+    public void updateProfile(User user, String phoneNumber, String avatarUrl) {
+        var profile = getProfileByUser(user);
+        profile.setPhoneNumber(phoneNumber);
+        profile.setAvatarUrl(avatarUrl);
         profileRepository.save(profile);
     }
 }

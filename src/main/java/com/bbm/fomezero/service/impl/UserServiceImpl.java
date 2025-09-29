@@ -4,6 +4,7 @@ import com.bbm.fomezero.dto.request.UserRequest;
 import com.bbm.fomezero.dto.response.AppResponse;
 import com.bbm.fomezero.dto.response.UserResponseDTO;
 import com.bbm.fomezero.exception.ConflictException;
+import com.bbm.fomezero.exception.ResourceNotFoundException;
 import com.bbm.fomezero.mapper.EntityConverter;
 import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.model.enums.Role;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +62,7 @@ public class UserServiceImpl implements UserService {
         var savedUser = userRepository.save(user);
 
         cartService.createCart(savedUser);
-        profileService.createProfile(savedUser, userRequest.getPhoneNumber());
+        profileService.createProfile(savedUser, userRequest.getPhoneNumber(), userRequest.getAvatarUrl());
 
         return savedUser;
     }
@@ -70,5 +72,38 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseDTO> getAllUsers() {
         return userResponseConverter
                 .mapEntityToDtoList(userRepository.findAll(), UserResponseDTO.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("User not found."));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseDTO getUserById(Long id) {
+        var user = userRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("User not found."));
+
+        return userResponseConverter.mapEntityToDto(user, UserResponseDTO.class);
+    }
+
+    @Override
+    @Transactional
+    public AppResponse updateUser(Long id, UserRequest userRequest) {
+        var user = getUser(id);
+        user.setFullName(userRequest.getFullName());
+        var updatedUser = userRepository.save(user);
+        profileService.updateProfile(updatedUser, userRequest.getPhoneNumber(), userRequest.getAvatarUrl());
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("User account updated successfully.")
+                .description("Welcome back, " + user.getFullName() + "!")
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

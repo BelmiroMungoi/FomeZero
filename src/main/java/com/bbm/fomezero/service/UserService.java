@@ -14,6 +14,12 @@ public interface UserService {
     User createUserAndReturnEntity(UserRequest userRequest);
 
     List<UserResponseDTO> getAllUsers();
+
+    User getUser(Long id);
+
+    UserResponseDTO getUserById(Long id);
+
+    AppResponse updateUser(Long id, UserRequest userRequest);
 }
 
 
