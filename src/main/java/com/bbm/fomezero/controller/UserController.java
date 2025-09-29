@@ -3,11 +3,13 @@ package com.bbm.fomezero.controller;
 import com.bbm.fomezero.dto.request.UserRequest;
 import com.bbm.fomezero.dto.response.AppResponse;
 import com.bbm.fomezero.dto.response.UserResponseDTO;
+import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,5 +32,10 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponseDTO> getUserById(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(userService.getUserById(user.getId()));
     }
 }
