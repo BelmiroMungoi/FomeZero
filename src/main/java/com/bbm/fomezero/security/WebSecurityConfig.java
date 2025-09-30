@@ -52,6 +52,8 @@ public class WebSecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/api/v1/users",
+                                "/api/v1/users/activate",
+                                "/api/v1/users/deactivate",
                                 "/api/v1/drivers"
                         ).hasRole(ADMIN.name())
                         .requestMatchers("/api/v1/drivers/profile").hasRole(DRIVER.name())
