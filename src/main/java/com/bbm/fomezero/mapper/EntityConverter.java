@@ -25,7 +25,10 @@ public class EntityConverter<E, D> {
                 .addMappings(mapper -> mapper.map(Driver::getUser, DriverResponseDTO::setUser));
 
         modelMapper.createTypeMap(User.class, UserResponseDTO.class)
-                .addMappings(mapper -> mapper.map(User::getProfile, UserResponseDTO::setProfile));
+                .addMappings(mapper -> {
+                    mapper.map(User::getProfile, UserResponseDTO::setProfile);
+                    mapper.map(User::getAddresses, UserResponseDTO::setAddresses);
+                });
     }
 
     public D mapEntityToDto(E entity, Class<D> dtoClass) {
