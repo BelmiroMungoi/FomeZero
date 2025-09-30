@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -103,10 +104,20 @@ public class APIExceptionHandler extends ResponseEntityExceptionHandler {
         return getObjectResponseEntity(request, status, "Your session has expired. Please log in again.", ex);
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<Object> handleDisabledException(DisabledException ex, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+
+        return getObjectResponseEntity(request, status, "Account disabled. " +
+                "Please complete the required steps to activate your account. " +
+                "If this persist please contact the Admin", ex);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(Exception ex, HttpServletRequest request) {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        System.out.println(ex.getMessage());
+        ex.printStackTrace();
+
         return getObjectResponseEntity(request, status, "We’re sorry, but an unexpected error occurred. Please try again.", ex);
     }
 

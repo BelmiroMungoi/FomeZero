@@ -45,7 +45,7 @@ public class UserController {
 
     }
 
-    @PutMapping("/activate")
+    @PatchMapping("/activate")
     public ResponseEntity<AppResponse> activateUser(@RequestParam("userId") Long userId) {
         return ResponseEntity.ok(userService.activateUser(userId));
     }
