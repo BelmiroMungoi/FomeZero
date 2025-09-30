@@ -56,7 +56,7 @@ public class WebSecurityConfig {
                                 "/api/v1/users/deactivate",
                                 "/api/v1/drivers"
                         ).hasRole(ADMIN.name())
-                        .requestMatchers("/api/v1/drivers/profile").hasRole(DRIVER.name())
+                        .requestMatchers("/api/v1/drivers/profile").hasAnyRole(DRIVER.name(), ADMIN.name())
                         .anyRequest()
                         .authenticated())
                 .exceptionHandling((exception) -> exception
