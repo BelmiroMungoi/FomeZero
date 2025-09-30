@@ -106,4 +106,57 @@ public class UserServiceImpl implements UserService {
                 .createdAt(LocalDateTime.now())
                 .build();
     }
+
+    @Override
+    @Transactional
+    public AppResponse activateUser(Long id) {
+        var user = getUser(id);
+        if (Boolean.TRUE.equals(user.isStatus())) {
+            throw new ConflictException("This account is already active.");
+        }
+        user.setStatus(true);
+        userRepository.save(user);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("User account activated successfully.")
+                .description("Hello, " + user.getFullName() + ", your account has been activated.")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AppResponse deactivateUser(Long id) {
+        var user = getUser(id);
+        if (Boolean.FALSE.equals(user.isStatus())) {
+            throw new ConflictException("This account has already been deactivated.");
+        }
+        user.setStatus(false);
+        userRepository.save(user);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("User account deactivated successfully.")
+                .description("Hello, " + user.getFullName() + ", your account has been deactivated.")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AppResponse deleteUser(Long id) {
+        var user = getUser(id);
+        userRepository.delete(user);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("User account deleted successfully.")
+                .description("The account, " + user.getFullName() + ", has been deleted.")
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 }

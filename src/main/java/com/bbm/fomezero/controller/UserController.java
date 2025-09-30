@@ -44,4 +44,19 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user.getId(), userRequest));
 
     }
+
+    @PutMapping("/activate")
+    public ResponseEntity<AppResponse> activateUser(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(userService.activateUser(userId));
+    }
+
+    @PatchMapping("/deactivate")
+    public ResponseEntity<AppResponse> deactivateUser(@RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(userService.deactivateUser(userId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AppResponse> deleteUser(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(userService.deleteUser(id));
+    }
 }

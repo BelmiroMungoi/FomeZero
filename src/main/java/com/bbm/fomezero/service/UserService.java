@@ -20,6 +20,12 @@ public interface UserService {
     UserResponseDTO getUserById(Long id);
 
     AppResponse updateUser(Long id, UserRequest userRequest);
+
+    AppResponse activateUser(Long id);
+
+    AppResponse deactivateUser(Long id);
+
+    AppResponse deleteUser(Long id);
 }
 
 
