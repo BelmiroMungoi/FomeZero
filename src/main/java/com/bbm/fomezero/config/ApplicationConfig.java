@@ -22,14 +22,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .map(user -> {
-                    if (Boolean.FALSE.equals(user.isStatus())) {
-                        throw new UnauthorizedException("Account disabled. " +
-                                "Please complete the required steps to activate your account.");
-                    }
-                    return user;
-                })
+        return email -> userRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 

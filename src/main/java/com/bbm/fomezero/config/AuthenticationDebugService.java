@@ -20,7 +20,7 @@ public class AuthenticationDebugService {
         System.out.println("Email recebido: " + email);
         System.out.println("Senha recebida: " + rawPassword);
         
-        userRepository.findByEmail(email).ifPresentOrElse(
+        userRepository.findByEmailIgnoreCase(email).ifPresentOrElse(
             user -> {
                 System.out.println("Usuário encontrado: " + user.getEmail());
                 System.out.println("Senha no BD: " + user.getPassword());
