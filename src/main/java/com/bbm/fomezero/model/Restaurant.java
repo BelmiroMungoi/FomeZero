@@ -30,6 +30,10 @@ public class Restaurant {
     @CreationTimestamp
     private LocalDateTime registrationDate;
 
+    @Column(length = 2000)
+    @ElementCollection
+    private List<String> images = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;

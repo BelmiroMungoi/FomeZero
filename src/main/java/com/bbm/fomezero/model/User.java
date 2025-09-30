@@ -35,7 +35,7 @@ public class User implements UserDetails {
     
     @CreationTimestamp
     private LocalDateTime createdAt;
-    
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Profile profile;
     
@@ -56,6 +56,8 @@ public class User implements UserDetails {
     
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Driver driver;
+
+    /*TODO: Add the user favorites restaurants*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
