@@ -16,9 +16,9 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public Cart createCart(User user) {
+    public void createCart(User user) {
         Cart cart = new Cart();
         cart.setUser(user);
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
     }
 }
