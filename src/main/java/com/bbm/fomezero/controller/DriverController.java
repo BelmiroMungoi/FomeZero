@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/drivers")
-@Tag(name = "3. Driver")
+@Tag(name = "4. Driver Management")
 public class DriverController {
 
     private final DriverService driverService;
