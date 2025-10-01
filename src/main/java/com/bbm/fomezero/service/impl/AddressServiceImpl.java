@@ -30,10 +30,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AppResponse createAddress(AddressRequestDTO addressRequest, Long userId) {
-        var user = userService.getUser(userId);
-        var address = entityConverter.mapDtoToEntity(addressRequest, Address.class);
-        address.setUser(user);
-        addressRepository.save(address);
+        createAddressAndReturnEntity(addressRequest, userId);
 
         return AppResponse.builder()
                 .responseCode(OK.value())
@@ -42,6 +39,16 @@ public class AddressServiceImpl implements AddressService {
                 .description("Address created!")
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public Address createAddressAndReturnEntity(AddressRequestDTO addressRequest, Long userId) {
+        var user = userService.getUser(userId);
+        var address = entityConverter.mapDtoToEntity(addressRequest, Address.class);
+        address.setUser(user);
+        addressRepository.save(address);
+        return addressRepository.save(address);
     }
 
     @Override

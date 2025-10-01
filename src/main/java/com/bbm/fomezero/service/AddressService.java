@@ -11,6 +11,8 @@ public interface AddressService {
 
     AppResponse createAddress(AddressRequestDTO addressRequest, Long userId);
 
+    Address createAddressAndReturnEntity(AddressRequestDTO addressRequest, Long userId);
+
     Address getAddress(Long id);
 
     List<AddressResponseDTO> getAllAddressesByUser(Long userId);
