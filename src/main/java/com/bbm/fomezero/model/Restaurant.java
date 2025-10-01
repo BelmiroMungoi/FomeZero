@@ -34,7 +34,7 @@ public class Restaurant {
     @ElementCollection
     private List<String> images = new ArrayList<>();
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
     private User owner;
 
