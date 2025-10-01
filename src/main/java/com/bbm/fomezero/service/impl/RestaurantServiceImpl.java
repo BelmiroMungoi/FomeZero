@@ -6,7 +6,6 @@ import com.bbm.fomezero.exception.BadRequestException;
 import com.bbm.fomezero.exception.ConflictException;
 import com.bbm.fomezero.mapper.EntityConverter;
 import com.bbm.fomezero.model.Restaurant;
-import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.repository.RestaurantRepository;
 import com.bbm.fomezero.service.AddressService;
 import com.bbm.fomezero.service.RestaurantService;
@@ -24,15 +23,16 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
 
-    private final AddressService addressService;
     private final UserService userService;
+    private final AddressService addressService;
     private final RestaurantRepository restaurantRepository;
     private final EntityConverter<Restaurant, RestaurantRequestDTO> entityConverter;
 
     @Override
     @Transactional
-    public AppResponse createRestaurant(Long userId, RestaurantRequestDTO restaurantRequest) {
-        var user = userService.getUser(userId);
+    public AppResponse createRestaurant(RestaurantRequestDTO restaurantRequest) {
+        var user = userService.getUser(restaurantRequest.getUserId());
+
         if (user.getRestaurant() != null) {
             throw new BadRequestException("This account already has a restaurant.");
         }
@@ -49,8 +49,9 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setOwner(user);
 
         var savedRestaurant = restaurantRepository.save(restaurant);
-        var address = addressService.createAddressAndReturnEntity(restaurantRequest.getAddress(), userId);
+        var address = addressService.createAddressAndReturnEntity(restaurantRequest.getAddress(), user.getId());
         savedRestaurant.setAddress(address);
+        userService.deactivateUser(user.getId());
 
         return AppResponse.builder()
                 .responseCode(OK.value())

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface RestaurantService {
 
-    AppResponse createRestaurant(Long userId, RestaurantRequestDTO restaurantRequest);
+    AppResponse createRestaurant(RestaurantRequestDTO restaurantRequest);
 
     Restaurant getRestaurantById(Long id);
 
