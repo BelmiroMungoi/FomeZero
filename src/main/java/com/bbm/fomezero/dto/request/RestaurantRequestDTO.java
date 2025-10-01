@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class RestaurantRequestDTO {
 
+    private Long userId;
     private String name;
     private String description;
     private String cuisineType;
