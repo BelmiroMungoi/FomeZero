@@ -9,6 +9,7 @@ import com.bbm.fomezero.mapper.EntityConverter;
 import com.bbm.fomezero.model.User;
 import com.bbm.fomezero.model.enums.Role;
 import com.bbm.fomezero.repository.UserRepository;
+import com.bbm.fomezero.security.JWTService;
 import com.bbm.fomezero.service.CartService;
 import com.bbm.fomezero.service.ProfileService;
 import com.bbm.fomezero.service.UserService;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final JWTService jwtService;
     private final CartService cartService;
     private final ProfileService profileService;
     private final PasswordEncoder passwordEncoder;
@@ -38,6 +40,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public AppResponse createUser(UserRequest userRequest) {
         var user = createUserAndReturnEntity(userRequest);
+        var token = jwtService.generateToken(user);
+
+        if (user.getRole() == Role.RESTAURANT_OWNER) {
+            user.setStatus(true);
+            userRepository.save(user);
+        }
 
         return AppResponse.builder()
                 .responseCode(CREATED.value())
@@ -45,6 +53,7 @@ public class UserServiceImpl implements UserService {
                 .responseMessage("User account created successfully.")
                 .description("Welcome, " + user.getFullName() + "!")
                 .createdAt(LocalDateTime.now())
+                .token(token)
                 .build();
     }
 
@@ -56,7 +65,7 @@ public class UserServiceImpl implements UserService {
         }
 
         var user = userConverter.mapDtoToEntity(userRequest, User.class);
-        user.setStatus(true);
+        user.setStatus(false);
         user.setRole(Role.valueOf(userRequest.getRole().toUpperCase()));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         var savedUser = userRepository.save(user);

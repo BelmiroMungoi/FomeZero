@@ -15,4 +15,5 @@ public class AppResponse {
     private String responseMessage;
     private String description;
     private LocalDateTime createdAt;
+    private String token;
 }
