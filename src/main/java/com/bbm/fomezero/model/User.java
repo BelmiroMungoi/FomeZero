@@ -51,8 +51,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
     
-    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
-    private List<Restaurant> restaurants = new ArrayList<>();
+    @OneToOne(mappedBy = "owner")
+    private Restaurant restaurant;
     
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Driver driver;
