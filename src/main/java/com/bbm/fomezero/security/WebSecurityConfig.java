@@ -2,10 +2,12 @@ package com.bbm.fomezero.security;
 
 import com.bbm.fomezero.exception.handler.CustomAccessDeniedHandler;
 import com.bbm.fomezero.exception.handler.CustomUnauthorizedHandler;
+import com.bbm.fomezero.model.enums.Permission;
 import com.bbm.fomezero.model.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,8 +24,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.bbm.fomezero.model.enums.Role.ADMIN;
-import static com.bbm.fomezero.model.enums.Role.DRIVER;
+import static com.bbm.fomezero.model.enums.Permission.ADMIN_READ;
+import static com.bbm.fomezero.model.enums.Permission.DRIVER_READ;
+import static com.bbm.fomezero.model.enums.Role.*;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -46,17 +51,15 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers(
                                 "/api/v1/auth/**",
-                                "/api/v1/drivers/",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**"
                         ).permitAll()
-                        .requestMatchers(
-                                "/api/v1/users",
-                                "/api/v1/users/activate",
-                                "/api/v1/users/deactivate",
-                                "/api/v1/drivers"
-                        ).hasRole(ADMIN.name())
-                        .requestMatchers("/api/v1/drivers/profile").hasAnyRole(DRIVER.name(), ADMIN.name())
+
+                        .requestMatchers(GET, "/api/v1/drivers").hasRole(ADMIN.name())
+                        .requestMatchers(POST, "/api/v1/users/", "/api/v1/drivers/").permitAll()
+                        .requestMatchers("/api/v1/users", "/api/v1/users/**").hasRole(ADMIN.name())
+                        .requestMatchers(POST, "/api/v1/restaurants/").hasRole(RESTAURANT_OWNER.name())
+                        .requestMatchers(GET, "/api/v1/drivers/profile").hasAnyAuthority(DRIVER_READ.name(), ADMIN_READ.name())
                         .anyRequest()
                         .authenticated())
                 .exceptionHandling((exception) -> exception
