@@ -2,8 +2,10 @@ package com.bbm.fomezero.service.impl;
 
 import com.bbm.fomezero.dto.request.RestaurantRequestDTO;
 import com.bbm.fomezero.dto.response.AppResponse;
+import com.bbm.fomezero.dto.response.RestaurantResponseDTO;
 import com.bbm.fomezero.exception.BadRequestException;
 import com.bbm.fomezero.exception.ConflictException;
+import com.bbm.fomezero.exception.ResourceNotFoundException;
 import com.bbm.fomezero.mapper.EntityConverter;
 import com.bbm.fomezero.model.Restaurant;
 import com.bbm.fomezero.repository.RestaurantRepository;
@@ -27,6 +29,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final AddressService addressService;
     private final RestaurantRepository restaurantRepository;
     private final EntityConverter<Restaurant, RestaurantRequestDTO> entityConverter;
+    private final EntityConverter<Restaurant, RestaurantResponseDTO> responseConverter;
 
     @Override
     @Transactional
@@ -47,6 +50,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
         var restaurant = entityConverter.mapDtoToEntity(restaurantRequest, Restaurant.class);
         restaurant.setOwner(user);
+        restaurant.setApproved(false);
 
         var savedRestaurant = restaurantRepository.save(restaurant);
         var address = addressService.createAddressAndReturnEntity(restaurantRequest.getAddress(), user.getId());
@@ -63,23 +67,44 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Restaurant getRestaurantById(Long id) {
-        return null;
+        return restaurantRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Restaurant not found."));
     }
 
     @Override
-    public Restaurant getRestaurantByUserId(Long userId) {
-        return null;
+    @Transactional(readOnly = true)
+    public RestaurantResponseDTO findRestaurantById(Long id) {
+        return responseConverter.mapEntityToDto(
+                getRestaurantById(id), RestaurantResponseDTO.class);
     }
 
     @Override
-    public List<Restaurant> getAllRestaurants() {
-        return List.of();
+    @Transactional(readOnly = true)
+    public RestaurantResponseDTO getRestaurantByOwnerId(Long userId) {
+        var restaurant = restaurantRepository.findByOwnerId(userId).orElseThrow(() ->
+                new ResourceNotFoundException("Restaurant not found."));
+
+        return responseConverter.mapEntityToDto(restaurant, RestaurantResponseDTO.class);
     }
 
     @Override
-    public List<Restaurant> searchRestaurants(String keyword) {
-        return List.of();
+    @Transactional
+    public List<RestaurantResponseDTO> getAllRestaurants() {
+        return responseConverter.mapEntityToDtoList(
+                restaurantRepository.findAll(),
+                RestaurantResponseDTO.class
+        );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RestaurantResponseDTO> searchRestaurants(String keyword) {
+        return responseConverter.mapEntityToDtoList(
+                restaurantRepository.searchRestaurant(keyword),
+                RestaurantResponseDTO.class
+        );
     }
 
     @Override
@@ -89,6 +114,11 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public AppResponse openOrCloseRestaurant(Long id) {
+        return null;
+    }
+
+    @Override
+    public AppResponse approveRestaurant(Long id) {
         return null;
     }
 
