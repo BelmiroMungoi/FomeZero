@@ -25,7 +25,9 @@ public class Restaurant {
     private String cuisineType;
     private String contactInfo;
     private String openingHours;
-    private boolean isOpen;
+    private boolean open;
+    @Column(name = "approved")
+    private boolean approved;
 
     @CreationTimestamp
     private LocalDateTime registrationDate;
