@@ -2,8 +2,8 @@ package com.bbm.fomezero.service;
 
 import com.bbm.fomezero.dto.request.RestaurantRequestDTO;
 import com.bbm.fomezero.dto.response.AppResponse;
+import com.bbm.fomezero.dto.response.RestaurantResponseDTO;
 import com.bbm.fomezero.model.Restaurant;
-import com.bbm.fomezero.model.User;
 
 import java.util.List;
 
@@ -13,15 +13,19 @@ public interface RestaurantService {
 
     Restaurant getRestaurantById(Long id);
 
-    Restaurant getRestaurantByUserId(Long userId);
+    RestaurantResponseDTO findRestaurantById(Long id);
 
-    List<Restaurant> getAllRestaurants();
+    RestaurantResponseDTO getRestaurantByOwnerId(Long userId);
 
-    List<Restaurant> searchRestaurants(String keyword);
+    List<RestaurantResponseDTO> getAllRestaurants();
+
+    List<RestaurantResponseDTO> searchRestaurants(String keyword);
 
     AppResponse updateRestaurant(Long id, RestaurantRequestDTO restaurantRequest);
 
     AppResponse openOrCloseRestaurant(Long id);
+
+    AppResponse approveRestaurant(Long id);
 
     AppResponse deleteRestaurant(Long id);
 }
