@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
@@ -17,7 +18,7 @@ public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
             "OR lower(r.address.province) LIKE lower(concat('%',:keyword, '%'))")
     List<Restaurant> searchRestaurant(String keyword);
 
-    Restaurant findByOwnerId(Long id);
+    Optional<Restaurant> findByOwnerId(Long id);
 
     boolean existsByName(String name);
 }
