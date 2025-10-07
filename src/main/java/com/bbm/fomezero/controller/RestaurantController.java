@@ -44,4 +44,24 @@ public class RestaurantController {
     public ResponseEntity<RestaurantResponseDTO> getRestaurantByOwnerId(@RequestParam("id") Long id) {
         return ResponseEntity.ok(restaurantService.getRestaurantByOwnerId(id));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AppResponse> updateRestaurant(@PathVariable("id") Long id, @RequestBody RestaurantRequestDTO request) {
+        return ResponseEntity.ok(restaurantService.updateRestaurant(id, request));
+    }
+
+    @PatchMapping("/open")
+    public ResponseEntity<AppResponse> openOrCloseRestaurant(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(restaurantService.openOrCloseRestaurant(id));
+    }
+
+    @PatchMapping("/approve")
+    public ResponseEntity<AppResponse> approveRestaurant(@RequestParam("id") Long id) {
+        return ResponseEntity.ok(restaurantService.approveRestaurant(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<AppResponse> deleteRestaurant(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(restaurantService.deleteRestaurant(id));
+    }
 }
