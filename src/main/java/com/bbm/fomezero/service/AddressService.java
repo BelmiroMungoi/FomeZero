@@ -18,4 +18,6 @@ public interface AddressService {
     List<AddressResponseDTO> getAllAddressesByUser(Long userId);
 
     AppResponse updateAddress(Long id, AddressRequestDTO addressRequest);
+
+    Address updateAddressAndReturnEntity(Long id, AddressRequestDTO addressRequest);
 }
