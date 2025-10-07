@@ -108,22 +108,70 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
+    @Transactional
     public AppResponse updateRestaurant(Long id, RestaurantRequestDTO restaurantRequest) {
-        return null;
+        var restaurant = getRestaurantById(id);
+        restaurant.setName(restaurantRequest.getName());
+        restaurant.setDescription(restaurantRequest.getDescription());
+        restaurant.setCuisineType(restaurantRequest.getCuisineType());
+        restaurant.setContactInfo(restaurantRequest.getContactInfo());
+        restaurant.setOpeningHours(restaurantRequest.getOpeningHours());
+        restaurant.setAddress(addressService.updateAddressAndReturnEntity(id, restaurantRequest.getAddress()));
+        var updatedRestaurant = restaurantRepository.save(restaurant);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("Restaurant updated successfully.")
+                .description("Welcome, " + updatedRestaurant.getName() + "!")
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     @Override
+    @Transactional
     public AppResponse openOrCloseRestaurant(Long id) {
-        return null;
+        var restaurant = getRestaurantById(id);
+        restaurant.setOpen(!restaurant.isOpen());
+        restaurantRepository.save(restaurant);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("Restaurant status has changed.")
+                .description("Open: " + restaurant.isOpen())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     @Override
+    @Transactional
     public AppResponse approveRestaurant(Long id) {
-        return null;
+        var restaurant = getRestaurantById(id);
+        restaurant.setApproved(true);
+        var approvedRestaurant =restaurantRepository.save(restaurant);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("Restaurant approved .")
+                .description("Welcome, " + approvedRestaurant.getName() + "!")
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     @Override
+    @Transactional
     public AppResponse deleteRestaurant(Long id) {
-        return null;
+        var restaurant = getRestaurantById(id);
+        restaurantRepository.delete(restaurant);
+
+        return AppResponse.builder()
+                .responseCode(OK.value())
+                .responseStatus(OK)
+                .responseMessage("Restaurant approved .")
+                .description("Goodbye, " + restaurant.getName() + "!")
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }
