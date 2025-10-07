@@ -14,7 +14,6 @@ public class RestaurantRequestDTO {
     private String cuisineType;
     private String contactInfo;
     private String openingHours;
-    private boolean isOpen;
     private AddressRequestDTO address;
     private List<String> images;
 }
