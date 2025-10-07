@@ -68,14 +68,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     @Transactional
     public AppResponse updateAddress(Long id, AddressRequestDTO addressRequest) {
-        var address = getAddress(id);
-        address.setStreet(addressRequest.getStreet());
-        address.setCity(addressRequest.getCity());
-        address.setProvince(addressRequest.getProvince());
-        address.setZipCode(addressRequest.getZipCode());
-        address.setLongitude(addressRequest.getLongitude());
-        address.setLatitude(addressRequest.getLatitude());
-        addressRepository.save(address);
+        updateAddressAndReturnEntity(id, addressRequest);
 
         return  AppResponse.builder()
                 .responseCode(OK.value())
@@ -84,5 +77,19 @@ public class AddressServiceImpl implements AddressService {
                 .description("Address updated!")
                 .createdAt(LocalDateTime.now())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public Address updateAddressAndReturnEntity(Long id, AddressRequestDTO addressRequest) {
+        var address = getAddress(id);
+        address.setStreet(addressRequest.getStreet());
+        address.setCity(addressRequest.getCity());
+        address.setProvince(addressRequest.getProvince());
+        address.setZipCode(addressRequest.getZipCode());
+        address.setLongitude(addressRequest.getLongitude());
+        address.setLatitude(addressRequest.getLatitude());
+
+        return addressRepository.save(address);
     }
 }
